@@ -1,0 +1,2 @@
+Main-Class: org.globusonline.JGOClient
+Class-Path: lib/jce-jdk13-131.jar jce-jdk13-131.jar

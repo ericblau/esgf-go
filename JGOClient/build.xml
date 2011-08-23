@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="make_jar" name="JGOClient">
+  <property environment="env"/>
+  <property name="debuglevel" value="source,lines,vars"/>
+  <property name="target" value="1.6"/>
+  <property name="source" value="1.6"/>
+  <property name="basedir" value="."/>
+  <property name="src_dir" value="${basedir}/src"/>
+  <property name="build_dir" value="${basedir}/build"/>
+  <property name="dist_dir" value="${basedir}/dist"/>
+  <property name="lib.dir"  value="${basedir}/lib"/>
+  <property name="lib_dir"  value="${basedir}/lib"/>
+  <property name="jar_name" value="${build_dir}/JGOClient.jar"/>
+
+  <target name="init">
+    <mkdir dir="${build_dir}"/>
+    <mkdir dir="${build_dir}/lib"/>
+    <copy toDir="${build_dir}/lib">
+      <fileset casesensitive="yes" dir="${basedir}/lib">
+        <include name="*.jar"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="clean">
+    <delete verbose="false" includeEmptyDirs="true">
+      <fileset dir="${build_dir}" />
+    </delete>
+  </target>
+  <target depends="clean" name="cleanall"/>
+  <target depends="compile" name="build"/>
+  <target depends="init" name="compile">
+    <javac debug="true" destdir="${build_dir}" srcdir="${src_dir}">
+      <include name="**/*.java"/>
+      <exclude name="**/test/**/*.java"/>
+      <classpath>
+        <pathelement location="${lib_dir}"/>
+        <fileset dir="${lib_dir}">
+          <include name="lib/*.jar"/>
+          <include name="*.jar"/>
+        </fileset>
+        <pathelement location="${stubs.dest}"/>
+        <fileset dir="${build_dir}/lib">
+          <include name="common/*.jar"/>
+          <include name="*.jar"/>
+        </fileset>
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="make_jar" depends="compile"
+          description="(Creates the jar file distribution of this project)">
+    <echo message="JAR -  ${build_dir} ->> ${jar_name}"/>
+    <delete verbose="false">
+      <fileset file="${jar_name}" />
+    </delete>
+    <jar basedir="${build_dir}" destfile="${jar_name}" manifest="src/mainClass"/>
+  </target>
+</project>
