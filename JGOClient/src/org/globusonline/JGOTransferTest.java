@@ -89,8 +89,8 @@ public class JGOTransferTest
             print("Starting Transfer from " + GO_EP1_NAME + " to " + GO_ENDPOINT1_NAME);
             String taskID = transfer.transfer(GO_EP1_NAME, GO_ENDPOINT1_NAME, fileList, "/tmp");
 
-            print("Checking status of Task ID: " + taskID);
-            transfer.checkTaskStatus(taskID);
+            // print("Checking status of Task ID: " + taskID);
+            // transfer.checkTaskStatus(taskID);
 
             // if we don't sleep here, the EP is removed and the transfer won't complete
             // e-mailed error is:

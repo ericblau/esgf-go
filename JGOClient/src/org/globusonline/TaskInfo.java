@@ -19,10 +19,6 @@ package org.globusonline;
 // A convenience class that encapsulates the most important aspects of Tasks
 public class TaskInfo
 {
-    private String epName = null;
-    private String hosts = null;
-    private String myproxyServer = null;
-    private boolean isGlobusConnect = false;
     private long bytesTransferred = 0;
 
     public TaskInfo()
@@ -34,43 +30,8 @@ public class TaskInfo
         this.bytesTransferred = bytesTransferred;
     }
 
-    public void setHosts(String hosts)
-    {
-        this.hosts = hosts;
-    }
-
-    public void setMyproxyServer(String myproxyServer)
-    {
-        this.myproxyServer = myproxyServer;
-    }
-
-    public void setGlobusConnect(boolean isGlobusConnect)
-    {
-        this.isGlobusConnect = isGlobusConnect;
-    }
-
-    public String getBytesTransferred()
+    public long getBytesTransferred()
     {
         return this.bytesTransferred;
-    }
-
-    public String getEPName()
-    {
-        return this.epName;
-    }
-
-    public String getHosts()
-    {
-        return this.hosts;
-    }
-
-    public String getMyproxyServer()
-    {
-        return this.myproxyServer;
-    }
-
-    public boolean isGlobusConnect()
-    {
-        return this.isGlobusConnect;
     }
 }
