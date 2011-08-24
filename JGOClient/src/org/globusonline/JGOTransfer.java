@@ -310,8 +310,10 @@ public class JGOTransfer
         }
     }
 
-    public void checkTaskStatus(String taskID) throws JGOTransferException
+    public boolean isTaskRunning(String taskID) throws JGOTransferException
     {
+        boolean ret = false;
+
         int i = 0;
         String[] args = new String[10];
 
@@ -330,11 +332,13 @@ public class JGOTransfer
         {
             TaskResult result = (TaskResult)JGOClient.execJGOCommand(args);
             dprint(result.toString());
+            ret = ((result.status.equals("ACTIVE")) ? true : false);
         }
         catch(Exception e)
         {
             throw new JGOTransferException("Task failure: " + e.toString());
         }
+        return ret;
     }
 
     public String transfer(String sourceEPName, String destEPName, Vector<String> sourceFileList)
