@@ -91,6 +91,11 @@ public class JGOTransfer
         this.tmpFileDirectory = tmpFileDirectory;
     }
 
+    public String getUserCertificateFile()
+    {
+        return this.certificate;
+    }
+
     protected void retrieveMyproxyCredential() throws Exception
     {
         int myproxyPort = 7512;
