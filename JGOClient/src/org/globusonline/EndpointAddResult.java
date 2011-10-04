@@ -98,13 +98,13 @@ public class EndpointAddResult extends JGOResult
         JSONArray results = client.getResult(sConn);
         if (results != null)
         {
-            this.type = JGOUtils.extractFromResults(results, "DATA_TYPE");
+            this.type = JGOUtils.extractFromResults(results, null, "DATA_TYPE");
             if (this.type.equals("endpoint_create_result"))
             {
-                this.msg = JGOUtils.extractFromResults(results, "message");
-                this.gc_key = JGOUtils.extractFromResults(results, "globus_connect_setup_key");
-                this.req_id = JGOUtils.extractFromResults(results, "request_id");
-                this.canonical_name = JGOUtils.extractFromResults(results, "canonical_name");
+                this.msg = JGOUtils.extractFromResults(results, null, "message");
+                this.gc_key = JGOUtils.extractFromResults(results, null, "globus_connect_setup_key");
+                this.req_id = JGOUtils.extractFromResults(results, null, "request_id");
+                this.canonical_name = JGOUtils.extractFromResults(results, null, "canonical_name");
             }
             else
             {

@@ -138,7 +138,6 @@ public class ActivationRequirementResult extends JGOResult
 
         jobj = this.results.getJSONObject(0);
         this.activationMessage = jobj.getString("message");
-        System.out.println("ACTIVATION MESSAGE: " + this.activationMessage);
         if (this.activationMessage.indexOf("activated successfully") != -1)
         {
             ret = true;

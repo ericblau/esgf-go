@@ -195,17 +195,34 @@ public class JGOUtils
         return sb.toString();
     }
 
-    public static String extractFromResults(JSONArray results, String parameter)
+    public static String extractFromResults(JSONArray results, String name, String parameter)
     {
         String value = null;
         if (results != null)
         {
             try
             {
-                JSONObject jobj = results.getJSONObject(0);
-                if (jobj.get(parameter) != null)
+                if (name == null)
                 {
-                    value = jobj.get(parameter).toString();
+                    JSONObject jobj = results.getJSONObject(0);
+                    if (jobj.get(parameter) != null)
+                    {
+                        value = jobj.get(parameter).toString();
+                    }
+                }
+                else
+                {
+                    for(int i = 0; i < results.length(); i++)
+                    {
+                        JSONObject jobj = results.getJSONObject(i);
+                        if (name.equals(jobj.get("name").toString()))
+                        {
+                            if (jobj.get(parameter) != null)
+                            {
+                                value = jobj.get(parameter).toString();
+                            }
+                        }
+                    }
                 }
             }
             catch(Exception e)
@@ -253,8 +270,13 @@ public class JGOUtils
             if (jobj.get("DATA") != null)
             {
                 JSONArray dataArr = jobj.getJSONArray("DATA");
-                myProxyServer = extractFromResults(dataArr, "value");
+                myProxyServer = extractFromResults(dataArr, "hostname", "value");
             }
+            // if (jobj.get("DATA") != null)
+            // {
+            //     JSONArray dataArr = jobj.getJSONArray("DATA");
+            //     myProxyServer = extractFromResults(dataArr, "value");
+            // }
         }
         catch(Exception e)
         {
@@ -446,7 +468,8 @@ public class JGOUtils
                 String myProxyUser = opArgGetValue(opts.opArgs, "-U");
 
                 // if it's a globusConnect endpoint, OR no username was provided, attempt to auto-activate it
-                if ((globusConnect == true) || (myProxyUser == null))
+                if (ret.auto_activation_supported.equals("true") &&
+                    ((globusConnect == true) || (myProxyUser == null)))
                 {
                     activated = ret.autoActivate(myProxyServer, opts.opArgs[0], client);
                 }

@@ -39,13 +39,13 @@ public class EndpointRemoveResult extends JGOResult
         JSONArray results = client.getResult(sConn);
         if (results != null)
         {
-            this.type = JGOUtils.extractFromResults(results, "DATA_TYPE");
+            this.type = JGOUtils.extractFromResults(results, null, "DATA_TYPE");
             if (this.type.equals("result"))
             {
-                this.msg = JGOUtils.extractFromResults(results, "message");
-                this.code = JGOUtils.extractFromResults(results, "code");
-                this.resource = JGOUtils.extractFromResults(results, "resource");
-                this.req_id = JGOUtils.extractFromResults(results, "request_id");
+                this.msg = JGOUtils.extractFromResults(results, null, "message");
+                this.code = JGOUtils.extractFromResults(results, null, "code");
+                this.resource = JGOUtils.extractFromResults(results, null, "resource");
+                this.req_id = JGOUtils.extractFromResults(results, null, "request_id");
             }
             else
             {
