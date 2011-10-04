@@ -441,24 +441,26 @@ public class JGOUtils
 
             ret = new ActivationRequirementResult();
             ret.createFromJSONArray(results);
-
-            String myProxyUser = opArgGetValue(opts.opArgs, "-U");
-
-            // if it's a globusConnect endpoint, OR no username was provided, attempt to auto-activate it
-            if ((globusConnect == true) || (myProxyUser == null))
+            if (!ret.activated.equals("true"))
             {
-                activated = ret.autoActivate(myProxyServer, opts.opArgs[0], client);
-            }
-            else
-            {
-                String myProxyPassword = opArgGetValue(opts.opArgs, "-P");
-                if (myProxyPassword == null)
+                String myProxyUser = opArgGetValue(opts.opArgs, "-U");
+
+                // if it's a globusConnect endpoint, OR no username was provided, attempt to auto-activate it
+                if ((globusConnect == true) || (myProxyUser == null))
                 {
-                    Console c = System.console();
-                    myProxyPassword = new String(c.readPassword("Enter MyProxy pass phrase: "));
+                    activated = ret.autoActivate(myProxyServer, opts.opArgs[0], client);
                 }
-                String lifetimeInHours = opArgGetValue(opts.opArgs, "-l");
-                activated = ret.activate(myProxyServer, opts.opArgs[0], myProxyUser, myProxyPassword, lifetimeInHours, client);
+                else
+                {
+                    String myProxyPassword = opArgGetValue(opts.opArgs, "-P");
+                    if (myProxyPassword == null)
+                    {
+                        Console c = System.console();
+                        myProxyPassword = new String(c.readPassword("Enter MyProxy pass phrase: "));
+                    }
+                    String lifetimeInHours = opArgGetValue(opts.opArgs, "-l");
+                    activated = ret.activate(myProxyServer, opts.opArgs[0], myProxyUser, myProxyPassword, lifetimeInHours, client);
+                }
             }
         }
         catch(FileNotFoundException fnfe)

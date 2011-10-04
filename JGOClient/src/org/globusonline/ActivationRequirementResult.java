@@ -93,7 +93,7 @@ public class ActivationRequirementResult extends JGOResult
             }
         }
 
-        StringBuffer path = this.buildPath(myProxyEndpoint);
+        StringBuffer path = this.buildPath(myProxyEndpoint, false);
 
         String jsonData = this.results.toString();
         jsonData = jsonData.substring(1, jsonData.length() - 1);
@@ -125,20 +125,20 @@ public class ActivationRequirementResult extends JGOResult
         {
             this.data = dataArr.getJSONObject(i);
 
-
             if ((this.data.get("name") != null) && (this.data.get("name").equals("hostname")))
             {
                 this.data.put("value", myProxyServer);
             }
         }
 
-        StringBuffer path = this.buildPath(myProxyEndpoint);
+        StringBuffer path = this.buildPath(myProxyEndpoint, true);
 
         HttpsURLConnection sConn = client.request("POST", path.toString(), "");
         this.results = client.getResult(sConn);
 
         jobj = this.results.getJSONObject(0);
         this.activationMessage = jobj.getString("message");
+        System.out.println("ACTIVATION MESSAGE: " + this.activationMessage);
         if (this.activationMessage.indexOf("activated successfully") != -1)
         {
             ret = true;
@@ -150,13 +150,20 @@ public class ActivationRequirementResult extends JGOResult
         return ret;
     }
 
-    private StringBuffer buildPath(String myProxyEndpoint)
+    private StringBuffer buildPath(String myProxyEndpoint, boolean autoActivate)
     {
         StringBuffer path = new StringBuffer("");
         String ep = myProxyEndpoint.replace("#", "%23");
         path.append("endpoint/");
         path.append(ep);
-        path.append("/activate");
+        if (autoActivate == true)
+        {
+            path.append("/autoactivate");
+        }
+        else
+        {
+            path.append("/activate");
+        }
 
         return path;
     }
