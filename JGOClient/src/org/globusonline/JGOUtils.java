@@ -429,82 +429,59 @@ public class JGOUtils
         throws Exception
     {
         ActivationRequirementResult ret = null;
-        try
+        boolean activated = false;
+        boolean globusConnect = false;
+
+        // v0.9
+        // we have the endpoint so we need to pull the myproxy server for that endpoint
+        //String myProxyServer = fetchMyProxyServerOfEndpoint(opts.username, opts.opArgs, client);
+
+        // v0.10
+        String myProxyServer = fetchMyProxyServerOfEndpoint(results);
+        if ((myProxyServer == null) || (myProxyServer.equals("null")))
         {
-            boolean activated = false;
-            boolean globusConnect = false;
+            throw new FileNotFoundException("Error: No default myproxy server for '" + opts.opArgs[0] + "'");
+        }
 
-            // v0.9
-            // we have the endpoint so we need to pull the myproxy server for that endpoint
-            //String myProxyServer = fetchMyProxyServerOfEndpoint(opts.username, opts.opArgs, client);
+        if (myProxyServer.charAt(0) == '*')
+        {
+            myProxyServer = myProxyServer.substring(1);
+            globusConnect = true;
+        }
 
-            // v0.10
-            String myProxyServer = fetchMyProxyServerOfEndpoint(results);
-            if ((myProxyServer == null) || (myProxyServer.equals("null")))
+        if (opts.verbose)
+        {
+            System.out.println("Retrieved MyProxy Server: " + myProxyServer);
+        }
+
+        if ((opts.opArgs == null) || (opts.opArgs[0] == null))
+        {
+            throw new Exception("Activation requires an endpoint [see Usage]");
+        }
+
+        ret = new ActivationRequirementResult();
+        ret.createFromJSONArray(results);
+        if (!ret.activated.equals("true"))
+        {
+            String myProxyUser = opArgGetValue(opts.opArgs, "-U");
+
+            // if it's a globusConnect endpoint, OR no username was provided, attempt to auto-activate it
+            if (ret.auto_activation_supported.equals("true") &&
+                ((globusConnect == true) || (myProxyUser == null)))
             {
-                throw new FileNotFoundException("Error: No default myproxy server for '" + opts.opArgs[0] + "'");
+                activated = ret.autoActivate(myProxyServer, opts.opArgs[0], client);
             }
-
-            if (myProxyServer.charAt(0) == '*')
+            else
             {
-                myProxyServer = myProxyServer.substring(1);
-                globusConnect = true;
-            }
-
-            if (opts.verbose)
-            {
-                System.out.println("Retrieved MyProxy Server: " + myProxyServer);
-            }
-
-            if ((opts.opArgs == null) || (opts.opArgs[0] == null))
-            {
-                throw new Exception("Activation requires an endpoint [see Usage]");
-            }
-
-            ret = new ActivationRequirementResult();
-            ret.createFromJSONArray(results);
-            if (!ret.activated.equals("true"))
-            {
-                String myProxyUser = opArgGetValue(opts.opArgs, "-U");
-
-                // if it's a globusConnect endpoint, OR no username was provided, attempt to auto-activate it
-                if (ret.auto_activation_supported.equals("true") &&
-                    ((globusConnect == true) || (myProxyUser == null)))
+                String myProxyPassword = opArgGetValue(opts.opArgs, "-P");
+                if (myProxyPassword == null)
                 {
-                    activated = ret.autoActivate(myProxyServer, opts.opArgs[0], client);
+                    Console c = System.console();
+                    myProxyPassword = new String(c.readPassword("Enter MyProxy pass phrase: "));
                 }
-                else
-                {
-                    String myProxyPassword = opArgGetValue(opts.opArgs, "-P");
-                    if (myProxyPassword == null)
-                    {
-                        Console c = System.console();
-                        myProxyPassword = new String(c.readPassword("Enter MyProxy pass phrase: "));
-                    }
-                    String lifetimeInHours = opArgGetValue(opts.opArgs, "-l");
-                    activated = ret.activate(myProxyServer, opts.opArgs[0], myProxyUser, myProxyPassword, lifetimeInHours, client);
-                }
+                String lifetimeInHours = opArgGetValue(opts.opArgs, "-l");
+                activated = ret.activate(myProxyServer, opts.opArgs[0], myProxyUser, myProxyPassword, lifetimeInHours, client);
             }
-        }
-        catch(FileNotFoundException fnfe)
-        {
-            System.err.println(fnfe.getMessage());
-        }
-        catch(IOException ie)
-        {
-            if (ret != null)
-            {
-                ret.activationMessage = "Activation Failed due to Incorrect Password";
-            }
-            if (opts.verbose)
-            {
-                System.out.println("Activation Failed due to Incorrect Password");
-                ie.printStackTrace();
-            }
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
         }
         return ret;
     }

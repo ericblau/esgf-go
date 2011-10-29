@@ -136,6 +136,10 @@ public class JGOTransfer
         }
         catch(Exception e)
         {
+            if (this.verbose)
+            {
+                e.printStackTrace();
+            }
         }
         finally
         {
@@ -182,6 +186,10 @@ public class JGOTransfer
         }
         catch(Exception e)
         {
+            if (this.verbose)
+            {
+                e.printStackTrace();
+            }
             throw new JGOTransferException("Endpoint List failure: " + e.toString());
         }
         return endpoints;
@@ -235,6 +243,10 @@ public class JGOTransfer
         }
         catch(Exception e)
         {
+            if (this.verbose)
+            {
+                e.printStackTrace();
+            }
             throw new JGOTransferException("Endpoint Add failure: " + e.toString());
         }
     }
@@ -262,6 +274,10 @@ public class JGOTransfer
         }
         catch(Exception e)
         {
+            if (this.verbose)
+            {
+                e.printStackTrace();
+            }
             throw new JGOTransferException("Endpoint Remove failure: " + e.toString());
         }
     }
@@ -311,6 +327,10 @@ public class JGOTransfer
         }
         catch(Exception e)
         {
+            if (this.verbose)
+            {
+                e.printStackTrace();
+            }
             throw new JGOTransferException("Endpoint Activation failure: " + e.toString());
         }
     }
