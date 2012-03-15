@@ -458,7 +458,7 @@ public class JGOUtils
             }
             else
             {
-                // if it's not a GC endpoint, we MUST have a myproxy server here                                           
+                // if it's not a GC endpoint, we MUST have a myproxy server here
                 if ((myProxyServer == null) || (myProxyServer.equals("null")))
                 {
                     throw new FileNotFoundException("Error: No default myproxy server for '" + opts.opArgs[0] + "'");
