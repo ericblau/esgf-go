@@ -1,2 +1,2 @@
 Main-Class: org.globusonline.JGOClient
-Class-Path: lib/jce-jdk13-131.jar jce-jdk13-131.jar
+Class-Path: lib/cog-jglobus-1.8.0.jar cog-jglobus-1.8.0.jar lib/cryptix-3.2.jar cryptix-3.2.jar lib/cryptix-base-1.0.jar cryptix-base-1.0.jar lib/puretls-1.0.jar puretls-1.0.jar lib/commons-logging-1.1.jar commons-logging-1.1.jar lib/cryptix-asn1-1.0.jar cryptix-asn1-1.0.jar lib/jce-jdk13-1.3.1.jar jce-jdk13-1.3.1.jar

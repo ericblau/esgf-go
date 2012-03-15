@@ -43,7 +43,7 @@ public class JGOUtils
                 {
                     found = true;
                     break;
-            }
+                }
             }
         }
         return found;
@@ -111,7 +111,7 @@ public class JGOUtils
             }
             else
             {
-                throw new Exception("endpoint-add requires a gridftp and an enpoint-name [-p GRIDFTP:PORT [-m MYPROXY:PORT] endpoint-name]");
+                throw new Exception("endpoint-add requires a gridftp and an endpoint-name [-p GRIDFTP:PORT [-m MYPROXY:PORT] endpoint-name]");
             }
         }
         else if (op.equals("endpoint-remove"))

@@ -229,7 +229,7 @@ public class JGOTransfer
         args[i++] = gsiftpURL;
         args[i++] = "-m";
         args[i++] = myproxyServer;
-        args[i++] = "-P";
+        //args[i++] = "-P";
         if (isGlobusConnect == true)
         {
             args[i++] = "--gc";
