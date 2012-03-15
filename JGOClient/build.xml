@@ -10,7 +10,8 @@
   <property name="dist_dir" value="${basedir}/dist"/>
   <property name="lib.dir"  value="${basedir}/lib"/>
   <property name="lib_dir"  value="${basedir}/lib"/>
-  <property name="jar_name" value="${build_dir}/JGOClient.jar"/>
+  <property name="version_str" value="1.0.1"/>
+  <property name="jar_name" value="${build_dir}/JGOClient-${version_str}.jar"/>
 
   <target name="init">
     <mkdir dir="${build_dir}"/>
@@ -54,6 +55,10 @@
     <delete verbose="false">
       <fileset file="${jar_name}" />
     </delete>
-    <jar basedir="${build_dir}" destfile="${jar_name}" manifest="src/mainClass"/>
+    <jar basedir="${build_dir}" destfile="${jar_name}" manifest="src/mainClass" duplicate="preserve">
+      <manifest>
+        <attribute name='Version' value='${version_str}'/>
+      </manifest>
+    </jar>
   </target>
 </project>
