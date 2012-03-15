@@ -438,21 +438,6 @@ public class JGOUtils
 
         // v0.10
         String myProxyServer = fetchMyProxyServerOfEndpoint(results);
-        if ((myProxyServer == null) || (myProxyServer.equals("null")))
-        {
-            throw new FileNotFoundException("Error: No default myproxy server for '" + opts.opArgs[0] + "'");
-        }
-
-        if (myProxyServer.charAt(0) == '*')
-        {
-            myProxyServer = myProxyServer.substring(1);
-            globusConnect = true;
-        }
-
-        if (opts.verbose)
-        {
-            System.out.println("Retrieved MyProxy Server: " + myProxyServer);
-        }
 
         if ((opts.opArgs == null) || (opts.opArgs[0] == null))
         {
@@ -465,7 +450,7 @@ public class JGOUtils
         {
             String myProxyUser = opArgGetValue(opts.opArgs, "-U");
 
-            // if it's a globusConnect endpoint, OR no username was provided, attempt to auto-activate it
+            // if it's a globusConnect endpoint, OR no username was provided, attempt to auto-activate it                  
             if (ret.auto_activation_supported.equals("true") &&
                 ((globusConnect == true) || (myProxyUser == null)))
             {
@@ -473,6 +458,16 @@ public class JGOUtils
             }
             else
             {
+                // if it's not a GC endpoint, we MUST have a myproxy server here                                           
+                if ((myProxyServer == null) || (myProxyServer.equals("null")))
+                {
+                    throw new FileNotFoundException("Error: No default myproxy server for '" + opts.opArgs[0] + "'");
+                }
+                if (opts.verbose)
+                {
+                    System.out.println("Retrieved MyProxy Server: " + myProxyServer);
+                }
+
                 String myProxyPassword = opArgGetValue(opts.opArgs, "-P");
                 if (myProxyPassword == null)
                 {

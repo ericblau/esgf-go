@@ -18,6 +18,7 @@ package org.globusonline;
 
 import java.io.*;
 
+import java.util.Date;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Map;
@@ -27,6 +28,7 @@ import java.util.Iterator;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -57,7 +59,7 @@ import org.bouncycastle.openssl.PasswordFinder;
  * Bouncy Castle, so the client cert/key don't have to be converted to
  * PKCS12. Uses JSON primarily, and allows console password retrieval.
  */
-public class JGOTransferAPIClient extends BaseTransferAPIClient
+public class JGOTransferAPIClient extends BCTransferAPIClient
 {
     private String path = null;
     private Options opts = null;
@@ -159,7 +161,7 @@ public class JGOTransferAPIClient extends BaseTransferAPIClient
     }
 
     static KeyManager[] createKeyManagers(String certFile, String keyFile, boolean verbose)
-        throws GeneralSecurityException, IOException
+        throws GeneralSecurityException, IOException, JGOTransferException
     {
         // Create a new empty key store.
         KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -195,12 +197,19 @@ public class JGOTransferAPIClient extends BaseTransferAPIClient
                 if (!(o instanceof X509Certificate))
                     continue;
                 cert = (X509Certificate) o;
+
+                Date expiration = cert.getNotAfter();
                 if (verbose)
                 {
                     System.out.println("client cert subject: "
                                        + cert.getSubjectX500Principal());
                     System.out.println("client cert issuer : "
                                        + cert.getIssuerX500Principal());
+                    System.out.println("client cert not valid after: " + expiration);
+                }
+                if (expiration.getTime() < System.currentTimeMillis())
+                {
+                    throw new JGOTransferException("Client certificate is expired.");
                 }
                 chain.add(cert);
             }
@@ -227,7 +236,8 @@ public class JGOTransferAPIClient extends BaseTransferAPIClient
     }
 
     public HttpsURLConnection request(String method, String path, String jsonData)
-          throws IOException, MalformedURLException, GeneralSecurityException {
+          throws Exception
+    {
         if (! path.startsWith("/")) {
             path = "/" + path;
         }
@@ -247,17 +257,41 @@ public class JGOTransferAPIClient extends BaseTransferAPIClient
         c.setRequestProperty("Accept", this.format);
         c.setUseCaches(false);
         c.setDoInput(true);
-        c.setDoOutput(true); 
-        c.setRequestProperty("Content-Type", this.format);
-        c.setRequestProperty("Content-Length", "" + Integer.toString(jsonData.getBytes().length));
+
+        if (jsonData != null)
+        {
+            c.setDoOutput(true); 
+            c.setRequestProperty("Content-Type", this.format);
+            c.setRequestProperty("Content-Length", "" + Integer.toString(jsonData.getBytes().length));
+        }
         c.setRequestProperty("Content-Language", "en-US");
         c.connect();
 
-        DataOutputStream wr = new DataOutputStream(c.getOutputStream());
-        wr.writeBytes(jsonData);
-        wr.flush ();
-        wr.close ();
+        if (jsonData != null)
+        {
+            DataOutputStream wr = new DataOutputStream(c.getOutputStream());
+            wr.writeBytes(jsonData);
+            wr.flush ();
+            wr.close ();
+        }
 
+        int statusCode = c.getResponseCode();
+        if (statusCode >= 400)
+        {
+            String statusMessage = c.getResponseMessage();
+            String errorHeader = null;
+            Map<String, List<String>> headers = c.getHeaderFields();
+            if (this.opts.verbose)
+            {
+                System.out.println("Error Headers Returned: " + headers);
+            }
+            if (headers.containsKey("X-Transfer-API-Error")) {
+                errorHeader = ((List<String>)
+                               headers.get("X-Transfer-API-Error")).get(0);
+            }
+            throw constructAPIError(statusCode, statusMessage, errorHeader,
+                                    c.getErrorStream());
+        }
         return c;
     }
 
@@ -327,5 +361,42 @@ public class JGOTransferAPIClient extends BaseTransferAPIClient
                 this.opts.username, this.opts.operation, this.opts.opArgs);
         }
         return this.path;
+    }
+
+    private static String readString(InputStream in) throws IOException {
+        Reader reader = null;
+        try {
+            // TODO: add charset
+            reader = new BufferedReader(new InputStreamReader(in));
+            StringBuilder builder = new StringBuilder();
+            char[] buffer = new char[8192];
+            int read;
+            while ((read = reader.read(buffer, 0, buffer.length)) > 0) {
+                builder.append(buffer, 0, read);
+            }
+            return builder.toString();
+        } finally {
+            if (reader != null)
+                reader.close();
+        }
+    }
+
+    protected APIError constructAPIError(int statusCode, String statusMessage,
+                                         String errorCode, InputStream input)
+    {
+        APIError error = new APIError(statusCode, statusMessage, errorCode);
+        try {
+            JSONObject errorDocument = new JSONObject(readString(input));
+            error.requestId = errorDocument.getString("request_id");
+            error.resource = errorDocument.getString("resource");
+            error.code = errorDocument.getString("code");
+            error.message = errorDocument.getString("message");
+        } catch (Exception e) {
+            // Make sure the APIError gets thrown, even if we can't parse out
+            // the details. If parsing fails, shove the exception in the
+            // message fields, so the parsing error is not silently dropped.
+            error.message = e.toString();
+        }
+        return error;
     }
 }

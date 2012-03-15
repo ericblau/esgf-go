@@ -58,7 +58,11 @@ public class BaseTransferAPIClient {
 
     static final String VERSION = "v0.10";
     static final String DEFAULT_BASE_URL =
-                    "https://transfer.api.globusonline.org/" + VERSION;
+        "https://transfer.api.globusonline.org/" + VERSION;
+    // static final String DEFAULT_BASE_URL =
+    //     "https://transfer.test.api.globusonline.org/dev";
+    // static final String DEFAULT_BASE_URL =
+    //     "https://transfer.qa.api.globusonline.org/dev";
 
     static final String FORMAT_JSON = "application/json";
     static final String FORMAT_XML = "application/xml";

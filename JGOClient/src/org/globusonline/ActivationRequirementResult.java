@@ -48,15 +48,18 @@ public class ActivationRequirementResult extends JGOResult
         this.auto_activation_supported = jobj.getString("auto_activation_supported");
         this.expire_time = jobj.getString("expire_time");
 
-        this.data = dataArr.getJSONObject(0);
+        if ((dataArr != null) && (dataArr.length() > 0))
+        {
+            this.data = dataArr.getJSONObject(0);
 
-        this.description = this.data.getString("description");
-        this.name = this.data.getString("name");
-        this.value = this.data.getString("value");
-        this.ui_name = this.data.getString("ui_name");
-        this.type = this.data.getString("type");
-        this.required = this.data.getString("required");
-        this.DATA_TYPE = this.data.getString("DATA_TYPE");
+            this.description = this.data.getString("description");
+            this.name = this.data.getString("name");
+            this.value = this.data.getString("value");
+            this.ui_name = this.data.getString("ui_name");
+            this.type = this.data.getString("type");
+            this.required = this.data.getString("required");
+            this.DATA_TYPE = this.data.getString("DATA_TYPE");
+        }
     }
 
     public boolean activate(String myProxyServer, String myProxyEndpoint, String myProxyUser,
