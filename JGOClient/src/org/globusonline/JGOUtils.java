@@ -430,7 +430,6 @@ public class JGOUtils
     {
         ActivationRequirementResult ret = null;
         boolean activated = false;
-        boolean globusConnect = false;
 
         // v0.9
         // we have the endpoint so we need to pull the myproxy server for that endpoint
@@ -450,13 +449,13 @@ public class JGOUtils
         {
             String myProxyUser = opArgGetValue(opts.opArgs, "-U");
 
-            // if it's a globusConnect endpoint, OR no username was provided, attempt to auto-activate it                  
-            if (ret.auto_activation_supported.equals("true") &&
-                ((globusConnect == true) || (myProxyUser == null)))
+            // if it's a globusConnect endpoint, OR no username was provided, attempt to auto-activate it
+            if (ret.auto_activation_supported.equals("true"))
             {
                 activated = ret.autoActivate(myProxyServer, opts.opArgs[0], client);
             }
-            else
+
+            if (activated == false)
             {
                 // if it's not a GC endpoint, we MUST have a myproxy server here
                 if ((myProxyServer == null) || (myProxyServer.equals("null")))
