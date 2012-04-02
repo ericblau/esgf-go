@@ -471,6 +471,10 @@ public class JGOUtils
                 if (myProxyPassword == null)
                 {
                     Console c = System.console();
+                    if (c == null)
+                    {
+                        throw new Exception("Error: Password not specified, and cannot retrieve console to read it");
+                    }
                     myProxyPassword = new String(c.readPassword("Enter MyProxy pass phrase: "));
                 }
                 String lifetimeInHours = opArgGetValue(opts.opArgs, "-l");
