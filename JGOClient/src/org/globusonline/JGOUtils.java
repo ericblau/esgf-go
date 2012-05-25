@@ -109,6 +109,10 @@ public class JGOUtils
             {
                 sb.append("/endpoint");
             }
+            else if (opArgHasValue(opArgs, "--gc"))
+            {
+                sb.append("/endpoint");
+            }
             else
             {
                 throw new Exception("endpoint-add requires a gridftp and an endpoint-name [-p GRIDFTP:PORT [-m MYPROXY:PORT] endpoint-name]");
@@ -471,11 +475,18 @@ public class JGOUtils
                 if (myProxyPassword == null)
                 {
                     Console c = System.console();
-                    if (c == null)
+                    if (c != null)
                     {
+                        myProxyPassword = new String(c.readPassword("Enter MyProxy pass phrase: "));
+                    }
+                    else
+                    {
+                        // System.out.print("Enter MyProxy pass phrase: ");
+                        // BufferedReader bReader = new BufferedReader(new InputStreamReader(System.in));
+
+                        // myProxyPassword = bReader.readLine();
                         throw new Exception("Error: Password not specified, and cannot retrieve console to read it");
                     }
-                    myProxyPassword = new String(c.readPassword("Enter MyProxy pass phrase: "));
                 }
                 String lifetimeInHours = opArgGetValue(opts.opArgs, "-l");
                 activated = ret.activate(myProxyServer, opts.opArgs[0], myProxyUser, myProxyPassword, lifetimeInHours, client);

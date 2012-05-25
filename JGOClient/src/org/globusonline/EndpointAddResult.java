@@ -62,26 +62,36 @@ public class EndpointAddResult extends JGOResult
         {
             jobj.put("myproxy_server", myProxyServer);
         }
- 
+
         JSONArray dataArr = new JSONArray();
         JSONObject dataObj = new JSONObject();
-        String host = "";
-        String port = "2811";
-        String[] pieces = gridFTPServer.split(":");
-        if (pieces != null)
+
+        if (isGlobusConnect == true)
         {
-            host = pieces[0];
-            if (pieces.length > 1)
+            dataObj.put("DATA_TYPE", "server");
+            dataObj.put("is_globus_connect", isGlobusConnect);
+        }
+        else
+        {
+            String host = "";
+            String port = "2811";
+            String[] pieces = gridFTPServer.split(":");
+            if (pieces != null)
             {
-                port = pieces[1];
+                host = pieces[0];
+                if (pieces.length > 1)
+                {
+                    port = pieces[1];
+                }
             }
+
+            dataObj.put("DATA_TYPE", "server");
+            dataObj.put("hostname", host);
+            dataObj.put("port", port);
+            dataObj.put("uri", "gsiftp://" + host + ":" + port);
+            dataObj.put("scheme", "gsiftp");
         }
 
-        dataObj.put("DATA_TYPE", "server");
-        dataObj.put("hostname", host);
-        dataObj.put("port", port);
-        dataObj.put("uri", "gsiftp://" + host + ":" + port);
-        dataObj.put("scheme", "gsiftp");
         if (serverDN != null)
         {
             dataObj.put("subject", serverDN);
