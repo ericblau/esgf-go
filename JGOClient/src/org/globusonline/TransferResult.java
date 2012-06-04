@@ -71,7 +71,14 @@ public class TransferResult extends JGOResult
         // }
 
         JSONObject data = new JSONObject();
-        data.put("recursive", false);
+        if (sourcePath.endsWith("/"))
+        {
+            data.put("recursive", true);
+        }
+        else
+        {
+            data.put("recursive", false);
+        }
         data.put("source_path", sourcePath);
         data.put("source_endpoint", sourceEndpoint);
         data.put("destination_path", destPath);
