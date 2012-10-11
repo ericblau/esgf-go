@@ -107,15 +107,27 @@ public class JGOTransferAPIClient extends BCTransferAPIClient
 
         this.opts = opts;
 
-        Security.addProvider(new BouncyCastleProvider());
+        if (this.opts.authToken != null)
+        {
+            if (this.opts.verbose)
+            {
+                System.out.println("Using authToken: " + this.opts.authToken);
+            }
+            Authenticator authenticator = new GoauthAuthenticator(this.opts.authToken);
+            this.setAuthenticator(authenticator);
+        }
+        else
+        {
+            Security.addProvider(new BouncyCastleProvider());
 
-        this.trustManagers = this.createTrustManagers(
-            this.opts.cafile, this.opts.verbose);
+            this.trustManagers = this.createTrustManagers(
+                this.opts.cafile, this.opts.verbose);
 
-        this.keyManagers = this.createKeyManagers(
-            this.opts.certfile, this.opts.keyfile, this.opts.verbose);
+            this.keyManagers = this.createKeyManagers(
+                this.opts.certfile, this.opts.keyfile, this.opts.verbose);
 
-        initSocketFactory(true);
+            initSocketFactory(true);
+        }
     }
 
     static TrustManager[] createTrustManagers(String trustedCAFile, boolean verbose)
@@ -258,6 +270,10 @@ public class JGOTransferAPIClient extends BCTransferAPIClient
         c.setUseCaches(false);
         c.setDoInput(true);
 
+        if (this.authenticator != null)
+        {
+            this.authenticator.authenticateConnection(c);
+        }
         if (jsonData != null)
         {
             c.setDoOutput(true); 

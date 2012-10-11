@@ -38,7 +38,7 @@ import javax.net.ssl.TrustManager;
 
 /**
  * Basic client for interacting with the Globus Online Transfer API as a single
- * user, using x509 authentication.
+ * user, using x509 authentication and/or OAuth.
  *
  * Does not make any assumptions about how the application will parse data
  * or handle key and trust stores.
@@ -47,6 +47,7 @@ public class BaseTransferAPIClient {
     protected String username;
     protected String baseUrl;
     protected String format;
+    protected Authenticator authenticator;
 
     protected boolean verbose = false;
 
@@ -56,13 +57,13 @@ public class BaseTransferAPIClient {
     protected TrustManager[] trustManagers;
     protected SSLSocketFactory socketFactory;
 
+    static final String CLIENT_VERSION = "JGOClient/1.0.3";
+
     static final String VERSION = "v0.10";
+    // static final String DEFAULT_BASE_URL =
+    //     "https://transfer.api.globusonline.org/" + VERSION;
     static final String DEFAULT_BASE_URL =
-        "https://transfer.api.globusonline.org/" + VERSION;
-    // static final String DEFAULT_BASE_URL =
-    //     "https://transfer.test.api.globusonline.org/dev";
-    // static final String DEFAULT_BASE_URL =
-    //     "https://transfer.qa.api.globusonline.org/dev";
+        "https://transfer.test.api.globusonline.org/" + VERSION;
 
     static final String FORMAT_JSON = "application/json";
     static final String FORMAT_XML = "application/xml";
@@ -132,6 +133,11 @@ public class BaseTransferAPIClient {
         this.socketFactory = null;
     }
 
+    public void setAuthenticator(Authenticator authenticator)
+    {
+        this.authenticator = authenticator;
+    }
+
     public HttpsURLConnection request(String method, String path)
           throws IOException, MalformedURLException, GeneralSecurityException,
                  APIError {
@@ -164,8 +170,15 @@ public class BaseTransferAPIClient {
         c.setUseCaches(false);
         c.setDoInput(true);
         c.setRequestProperty("X-Transfer-API-X509-User", this.username);
+        c.setRequestProperty("X-Transfer-API-Client", this.CLIENT_VERSION);
         c.setRequestProperty("Accept", this.format);
-        if (data != null) {
+
+        if (this.authenticator != null)
+        {
+            this.authenticator.authenticateConnection(c);
+        }
+        if (data != null)
+        {
             c.setDoOutput(true);
             c.setRequestProperty("Content-Type", this.format);
             c.setRequestProperty("Content-Length", "" + data.length());

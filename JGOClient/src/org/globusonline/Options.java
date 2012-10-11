@@ -28,6 +28,7 @@ public class Options
     public String certfile = null;
     public String keyfile = null;
     public String baseUrl = null;
+    public String authToken = null;
     public boolean verbose = false;
 
     public Options() { }
@@ -55,6 +56,7 @@ public class Options
             System.err.println("Usage: java org.globusonline.JGOClient "
                                + "-u username [-ca cafile -cert certfile -key keyfile -base baseurl -verbose] operation [operation args]");
             System.err.println("\tThe \"-u\" and \"operation\" arguments are REQUIRED");
+            System.err.println("\tIf \"-authToken\" is not specified, the -cert and -key options are required");
             System.err.println("\tIf \"-ca\" is not specified, " + this.cafile + " will be used");
             System.err.println("\tIf \"-cert\" is not specified, " + this.certfile + " will be used");
             System.err.println("\tIf \"-key\" is not specified, " + this.keyfile + " will be used");
@@ -83,6 +85,10 @@ public class Options
             else if (args[i].equals("-verbose"))
             {
                 this.verbose = true;
+            }
+            else if (args[i].equals("-authToken"))
+            {
+                this.authToken = args[++i];
             }
             else if (args[i].equals("-ca"))
             {
@@ -131,13 +137,16 @@ public class Options
         {
             throw new FileNotFoundException("CA File " + this.cafile + " does not exist.  Use \"-ca\" option to specify a valid file");
         }
-        if (!new File(this.certfile).exists())
+        if (this.authToken == null)
         {
-            throw new FileNotFoundException("CA File " + this.certfile + " does not exist.  Use \"-cert\" option to specify a valid file");
-        }
-        if (!new File(this.keyfile).exists())
-        {
-            throw new FileNotFoundException("CA File " + this.keyfile + " does not exist.  Use \"-key\" option to specify a valid file");
+            if (!new File(this.certfile).exists())
+            {
+                throw new FileNotFoundException("CA File " + this.certfile + " does not exist.  Use \"-cert\" option to specify a valid file");
+            }
+            if (!new File(this.keyfile).exists())
+            {
+                throw new FileNotFoundException("CA File " + this.keyfile + " does not exist.  Use \"-key\" option to specify a valid file");
+            }
         }
     }
 

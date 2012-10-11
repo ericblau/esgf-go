@@ -360,26 +360,20 @@ public class JGOUtils
         return ret;
     }
 
-    public static EndpointListResult processEndpointList(JSONArray results, Options opts)
+    public static EndpointListResult processEndpointList(JSONArray results, Options opts) throws Exception
     {
         EndpointListResult ret = null;
         JSONObject endpoints = null;
-        try
-        {
-            boolean list_public = opArgHasValue(opts.opArgs, "-p");
-            boolean list_verbose = opArgHasValue(opts.opArgs, "-v");
 
-            for(int i = 0; i < results.length(); i++)
-            {
-                endpoints = results.getJSONObject(i);
+        boolean list_public = opArgHasValue(opts.opArgs, "-p");
+        boolean list_verbose = opArgHasValue(opts.opArgs, "-v");
 
-                ret = new EndpointListResult();
-                ret.createFromJSON(endpoints, opts.username, list_public, list_verbose);
-            }
-        }
-        catch(Exception e)
+        for(int i = 0; i < results.length(); i++)
         {
-            e.printStackTrace();
+            endpoints = results.getJSONObject(i);
+
+            ret = new EndpointListResult();
+            ret.createFromJSON(endpoints, opts.username, list_public, list_verbose);
         }
         return ret;
     }
@@ -393,6 +387,7 @@ public class JGOUtils
         String myProxyServer = opArgGetValue(opts.opArgs, "-m");
         String serverDN = opArgGetValue(opts.opArgs, "-s");
         boolean isGlobusConnect = opArgHasValue(opts.opArgs, "--gc");
+
         boolean isPublic = opArgHasValue(opts.opArgs, "-P");
         String endpointName = opts.opArgs[opts.opArgs.length-1];
 
