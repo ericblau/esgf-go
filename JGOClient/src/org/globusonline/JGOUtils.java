@@ -384,47 +384,37 @@ public class JGOUtils
         return ret;
     }
 
-    public static EndpointAddResult processEndpointAdd(Options opts, JGOTransferAPIClient client)
+    public static EndpointAddResult processEndpointAdd(Options opts, JGOTransferAPIClient client) throws Exception
     {
         EndpointAddResult ret = null;
         JSONObject endpoints = null;
-        try
-        {
-            String gridFTPServer = opArgGetValue(opts.opArgs, "-p");
-            String myProxyServer = opArgGetValue(opts.opArgs, "-m");
-            String serverDN = opArgGetValue(opts.opArgs, "-s");
-            boolean isGlobusConnect = opArgHasValue(opts.opArgs, "--gc");
-            boolean isPublic = opArgHasValue(opts.opArgs, "-P");
-            String endpointName = opts.opArgs[opts.opArgs.length-1];
 
-            String path = getPath(opts.username, opts.operation, opts.opArgs);
-            ret = new EndpointAddResult(path);
-            ret.addEndpoint(opts.username, gridFTPServer, myProxyServer,
-                            serverDN, isGlobusConnect, isPublic, endpointName, client);
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
+        String gridFTPServer = opArgGetValue(opts.opArgs, "-p");
+        String myProxyServer = opArgGetValue(opts.opArgs, "-m");
+        String serverDN = opArgGetValue(opts.opArgs, "-s");
+        boolean isGlobusConnect = opArgHasValue(opts.opArgs, "--gc");
+        boolean isPublic = opArgHasValue(opts.opArgs, "-P");
+        String endpointName = opts.opArgs[opts.opArgs.length-1];
+
+        String path = getPath(opts.username, opts.operation, opts.opArgs);
+        ret = new EndpointAddResult(path);
+        ret.addEndpoint(opts.username, gridFTPServer, myProxyServer,
+                        serverDN, isGlobusConnect, isPublic, endpointName, client);
+
         return ret;
     }
 
-    public static EndpointRemoveResult processEndpointRemove(Options opts, JGOTransferAPIClient client)
+    public static EndpointRemoveResult processEndpointRemove(Options opts, JGOTransferAPIClient client) throws Exception
     {
         EndpointRemoveResult ret = null;
         JSONObject endpoints = null;
-        try
-        {
-            String path = getPath(opts.username, opts.operation, opts.opArgs);
 
-            ret = new EndpointRemoveResult(path);
-            String endpointName = opts.opArgs[opts.opArgs.length-1];
-            ret.removeEndpoint(opts.username, endpointName, client);
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
+        String path = getPath(opts.username, opts.operation, opts.opArgs);
+
+        ret = new EndpointRemoveResult(path);
+        String endpointName = opts.opArgs[opts.opArgs.length-1];
+        ret.removeEndpoint(opts.username, endpointName, client);
+
         return ret;
     }
 
