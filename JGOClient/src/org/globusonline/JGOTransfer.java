@@ -32,6 +32,7 @@ public class JGOTransfer
 {
     protected boolean verbose = false;
     protected String goUsername = null;
+    protected String authToken = null;
     protected String certificate = null;
     protected String key = null;
     protected String myproxyServer = null;
@@ -39,6 +40,13 @@ public class JGOTransfer
     protected String myproxyPassword = null;
     protected String caCertificate = null;
     protected String tmpFileDirectory = null;
+
+    public JGOTransfer(String goUsername, String authToken, String caCertificate)
+    {
+        this.goUsername = goUsername;
+        this.authToken = authToken;
+        this.caCertificate = caCertificate;
+    }
 
     public JGOTransfer(String goUsername, String certificate, String key, String caCertificate)
     {
@@ -59,16 +67,19 @@ public class JGOTransfer
 
     public void initialize() throws JGOTransferException, Exception
     {
-        if ((this.certificate == null) || (this.key == null))
+        if (this.authToken == null)
         {
-            if ((this.myproxyServer == null) || (this.myproxyUsername == null) || (this.myproxyPassword == null))
+            if ((this.certificate == null) || (this.key == null))
             {
-                dprint("MyProxy Server = " + this.myproxyServer);
-                dprint("MyProxy Username = " + this.myproxyUsername);
-                dprint("MyProxy Password = " + ((this.myproxyPassword == null) ? "NULL" : "******"));
-                throw new JGOTransferException("All Myproxy information is required (server, username, password)");
+                if ((this.myproxyServer == null) || (this.myproxyUsername == null) || (this.myproxyPassword == null))
+                {
+                    dprint("MyProxy Server = " + this.myproxyServer);
+                    dprint("MyProxy Username = " + this.myproxyUsername);
+                    dprint("MyProxy Password = " + ((this.myproxyPassword == null) ? "NULL" : "******"));
+                    throw new JGOTransferException("All Myproxy information is required (server, username, password)");
+                }
+                retrieveMyproxyCredential();
             }
-            retrieveMyproxyCredential();
         }
         dprint("Initialize complete");
     }
@@ -155,12 +166,21 @@ public class JGOTransfer
         Vector<EndpointInfo> endpoints = null;
 
         int i = 0;
-        String[] args = new String[10];
+        int argCount = ((this.authToken == null) ? 10 : 8);
+        String[] args = new String[argCount];
 
-        args[i++] = "-cert";
-        args[i++] = this.certificate;
-        args[i++] = "-key";
-        args[i++] = this.key;
+        if (this.authToken != null)
+        {
+            args[i++] = "-authToken";
+            args[i++] = this.authToken;
+        }
+        else
+        {
+            args[i++] = "-cert";
+            args[i++] = this.certificate;
+            args[i++] = "-key";
+            args[i++] = this.key;
+        }
         args[i++] = "-ca";
         args[i++] = this.caCertificate;
         args[i++] = "-u";
@@ -205,23 +225,33 @@ public class JGOTransfer
         throws JGOTransferException
     {
         int i = 0;
+        int argCount = ((this.authToken == null) ? 16 : 14);
         String[] args = null;
 
         if (isGlobusConnect == true)
         {
-            args = new String[16];
+            args = new String[argCount];
         }
         else
         {
-            args = new String[15];
+            argCount--;
+            args = new String[argCount];
         }
 
         args[i++] = "-ca";
         args[i++] = this.caCertificate;
-        args[i++] = "-cert";
-        args[i++] = this.certificate;
-        args[i++] = "-key";
-        args[i++] = this.key;
+        if (this.authToken != null)
+        {
+            args[i++] = "-authToken";
+            args[i++] = this.authToken;
+        }
+        else
+        {
+            args[i++] = "-cert";
+            args[i++] = this.certificate;
+            args[i++] = "-key";
+            args[i++] = this.key;
+        }
         args[i++] = "-u";
         args[i++] = this.goUsername;
         args[i++] = "endpoint-add";
@@ -254,14 +284,23 @@ public class JGOTransfer
     public void removeEndpoint(String logicalEPName) throws JGOTransferException
     {
         int i = 0;
-        String[] args = new String[10];
+        int argCount = ((this.authToken == null) ? 10 : 8);
+        String[] args = new String[argCount];
 
         args[i++] = "-ca";
         args[i++] = this.caCertificate;
-        args[i++] = "-cert";
-        args[i++] = this.certificate;
-        args[i++] = "-key";
-        args[i++] = this.key;
+        if (this.authToken != null)
+        {
+            args[i++] = "-authToken";
+            args[i++] = this.authToken;
+        }
+        else
+        {
+            args[i++] = "-cert";
+            args[i++] = this.certificate;
+            args[i++] = "-key";
+            args[i++] = this.key;
+        }
         args[i++] = "-u";
         args[i++] = this.goUsername;
         args[i++] = "endpoint-remove";
@@ -292,19 +331,21 @@ public class JGOTransfer
         throws JGOTransferException
     {
         int i = 0;
-        String[] args = null;
-        if ((myproxyUsername == null) && (myproxyPassword == null))
+        int argCount = (((myproxyUsername == null) && (myproxyPassword == null)) ? 10 : 14);
+        argCount -= ((this.authToken == null) ? 0 : 2);
+        String[] args = new String[argCount];
+        if (this.authToken != null)
         {
-            args = new String[10];
+            args[i++] = "-authToken";
+            args[i++] = this.authToken;
         }
         else
         {
-            args = new String[14];
+            args[i++] = "-cert";
+            args[i++] = this.certificate;
+            args[i++] = "-key";
+            args[i++] = this.key;
         }
-        args[i++] = "-cert";
-        args[i++] = this.certificate;
-        args[i++] = "-key";
-        args[i++] = this.key;
         args[i++] = "-ca";
         args[i++] = this.caCertificate;
         args[i++] = "-u";
@@ -340,14 +381,23 @@ public class JGOTransfer
         boolean ret = false;
 
         int i = 0;
-        String[] args = new String[10];
+        int argCount = ((this.authToken == null) ? 10 : 8);
+        String[] args = new String[argCount];
 
         args[i++] = "-ca";
         args[i++] = this.caCertificate;
-        args[i++] = "-cert";
-        args[i++] = this.certificate;
-        args[i++] = "-key";
-        args[i++] = this.key;
+        if (this.authToken != null)
+        {
+            args[i++] = "-authToken";
+            args[i++] = this.authToken;
+        }
+        else
+        {
+            args[i++] = "-cert";
+            args[i++] = this.certificate;
+            args[i++] = "-key";
+            args[i++] = this.key;
+        }
         args[i++] = "-u";
         args[i++] = this.goUsername;
         args[i++] = "task";
@@ -419,18 +469,28 @@ public class JGOTransfer
             throw new JGOTransferException("Transfer requires valid source and destination file lists of matching sizes");
         }
 
-        int index = 9;
+        int j = 0;
+        int index = ((this.authToken == null) ? 9 : 7);
         int totalSlots = (index + (sourceFileList.size() * 2));
         String[] args = new String[totalSlots];
-        args[0] = "-cert";
-        args[1] = this.certificate;
-        args[2] = "-key";
-        args[3] = this.key;
-        args[4] = "-ca";
-        args[5] = this.caCertificate;
-        args[6] = "-u";
-        args[7] = this.goUsername;
-        args[8] = "transfer";
+
+        if (this.authToken != null)
+        {
+            args[j++] = "-authToken";
+            args[j++] = this.authToken;
+        }
+        else
+        {
+            args[j++] = "-cert";
+            args[j++] = this.certificate;
+            args[j++] = "-key";
+            args[j++] = this.key;
+        }
+        args[j++] = "-ca";
+        args[j++] = this.caCertificate;
+        args[j++] = "-u";
+        args[j++] = this.goUsername;
+        args[j++] = "transfer";
 
         int len = sourceFileList.size();
         String sourceURL = null, destURL = null;

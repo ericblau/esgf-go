@@ -27,15 +27,17 @@ public class JGOTransferTest
     private static String KEY_FILE = "/tmp/x509up_u1000";
     private static String CA_CERTIFICATE_FILE = "/home/neillm/.globus/certificates/gd_bundle.crt";
 
-    private static String GRIDFTP_SERVER = "vm-125-67.ci.uchicago.edu:20202";
+    private static String GRIDFTP_SERVER = "gridftpserver.com:2811";
 
-    private static String MYPROXY_SERVER = "vm-125-66.ci.uchicago.edu:7512";
+    private static String MYPROXY_SERVER = "myproxyserver.com:7512";
     private static String MYPROXY_USERNAME = "testUser";
     private static String MYPROXY_PASSWORD = "testPass";
 
-    private static String GO_ENDPOINT1_NAME = "testEp1";
+    private static String GO_ENDPOINT1_NAME = "testEP1";
     private static String GO_ENDPOINT2_NAME = "testEp2";
     private static String GO_EP1_NAME       = "go#ep1";
+
+    private static String AUTHTOKEN         = "un=neillm78...ADD REAL TOKEN HERE";
 
     public static void print(String msg)
     {
@@ -47,7 +49,8 @@ public class JGOTransferTest
         try
         {
             //JGOTransfer transfer = new JGOTransfer(GO_USERNAME, CERTIFICATE_FILE, KEY_FILE, CA_CERTIFICATE_FILE);
-            JGOTransfer transfer = new JGOTransfer(GO_USERNAME, MYPROXY_SERVER, MYPROXY_USERNAME, MYPROXY_PASSWORD, CA_CERTIFICATE_FILE);
+            // JGOTransfer transfer = new JGOTransfer(GO_USERNAME, MYPROXY_SERVER, MYPROXY_USERNAME, MYPROXY_PASSWORD, CA_CERTIFICATE_FILE);
+            JGOTransfer transfer = new JGOTransfer(GO_USERNAME, AUTHTOKEN, CA_CERTIFICATE_FILE);
 
             // setup transfer parameters here (optional)
             transfer.setVerbose(true);
