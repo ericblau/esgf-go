@@ -10,7 +10,7 @@
   <property name="dist_dir" value="${basedir}/dist"/>
   <property name="lib.dir"  value="${basedir}/lib"/>
   <property name="lib_dir"  value="${basedir}/lib"/>
-  <property name="version_str" value="1.0.3alpha1"/>
+  <property name="version_str" value="1.0.3alpha2"/>
   <property name="jar_name" value="${build_dir}/JGOClient-${version_str}.jar"/>
 
   <target name="init">

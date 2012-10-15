@@ -132,7 +132,7 @@ public class JGOUtils
                 throw new Exception("endpoint-remove requires an endpoint-name");
             }
         }
-        else if (op.equals("activate"))
+        else if (op.equals("activate") || (op.equals("delegated-activate")))
         {
             if (opArgs != null)
             {
@@ -420,33 +420,57 @@ public class JGOUtils
         ActivationRequirementResult ret = null;
         boolean activated = false;
 
-        // v0.9
-        // we have the endpoint so we need to pull the myproxy server for that endpoint
-        //String myProxyServer = fetchMyProxyServerOfEndpoint(opts.username, opts.opArgs, client);
-
-        // v0.10
-        String myProxyServer = fetchMyProxyServerOfEndpoint(results);
-
         if ((opts.opArgs == null) || (opts.opArgs[0] == null))
         {
             throw new Exception("Activation requires an endpoint [see Usage]");
         }
 
+        String lifetimeInHours = opArgGetValue(opts.opArgs, "-l");
+
         ret = new ActivationRequirementResult();
         ret.createFromJSONArray(results);
         if (!ret.activated.equals("true"))
         {
+            // if we know we have a credential already, first attempt activation via delegation
+            if (opts.certfile != null)
+            {
+                try
+                {
+                    activated = ret.activateViaDelegation(opts.opArgs[0], opts.certfile, lifetimeInHours, client);
+                    if (activated == true)
+                    {
+                        return ret;
+                    }
+                }
+                catch(Exception e)
+                {
+                    if (opts.verbose)
+                    {
+                        System.out.println("Failed to activate via delegation.  Trying other methods");
+                    }
+                }
+            }
+
+            String myProxyServer = fetchMyProxyServerOfEndpoint(results);
             String myProxyUser = opArgGetValue(opts.opArgs, "-U");
 
             // if it's a globusConnect endpoint, OR no username was provided, attempt to auto-activate it
-            if (ret.auto_activation_supported.equals("true"))
+            if (ret.auto_activation_supported.equals("true") || (myProxyUser == null))
             {
                 activated = ret.autoActivate(myProxyServer, opts.opArgs[0], client);
             }
 
             if (activated == false)
             {
-                // if it's not a GC endpoint, we MUST have a myproxy server here
+                if (myProxyUser == null)
+                {
+                    // at this point, if we don't have a myProxyUsername, we're out of options
+                    throw new Exception("Failed to auto activate endpoint.  Please specify a username for manual activation");
+                }
+                String myProxyPassword = opArgGetValue(opts.opArgs, "-P");
+
+                // if it's not a GC endpoint, we should have a myproxy server here.
+                // if we don't, attempt a delegated credential activation here
                 if ((myProxyServer == null) || (myProxyServer.equals("null")))
                 {
                     throw new FileNotFoundException("Error: No default myproxy server for '" + opts.opArgs[0] + "'");
@@ -456,7 +480,6 @@ public class JGOUtils
                     System.out.println("Retrieved MyProxy Server: " + myProxyServer);
                 }
 
-                String myProxyPassword = opArgGetValue(opts.opArgs, "-P");
                 if (myProxyPassword == null)
                 {
                     Console c = System.console();
@@ -473,9 +496,31 @@ public class JGOUtils
                         throw new Exception("Error: Password not specified, and cannot retrieve console to read it");
                     }
                 }
-                String lifetimeInHours = opArgGetValue(opts.opArgs, "-l");
                 activated = ret.activate(myProxyServer, opts.opArgs[0], myProxyUser, myProxyPassword, lifetimeInHours, client);
             }
+        }
+        return ret;
+    }
+
+    public static ActivationRequirementResult processDelegatedActivationRequirements(
+        JSONArray results, Options opts, JGOTransferAPIClient client)
+        throws Exception
+    {
+        ActivationRequirementResult ret = null;
+        boolean activated = false;
+
+        if ((opts.opArgs == null) || (opts.opArgs[0] == null))
+        {
+            throw new Exception("Activation requires an endpoint [see Usage]");
+        }
+
+        String lifetimeInHours = opArgGetValue(opts.opArgs, "-l");
+
+        ret = new ActivationRequirementResult();
+        ret.createFromJSONArray(results);
+        if (!ret.activated.equals("true"))
+        {
+            activated = ret.activateViaDelegation(opts.opArgs[0], opts.certfile, lifetimeInHours, client);
         }
         return ret;
     }
@@ -533,6 +578,10 @@ public class JGOUtils
         else if (opts.operation.equals("activate"))
         {
             ret = processActivationRequirements(results, opts, client);
+        }
+        else if (opts.operation.equals("delegated-activate"))
+        {
+            ret = processDelegatedActivationRequirements(results, opts, client);
         }
         else if (opts.operation.equals("transfer"))
         {

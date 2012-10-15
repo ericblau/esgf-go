@@ -60,9 +60,9 @@ public class BaseTransferAPIClient {
     static final String CLIENT_VERSION = "JGOClient/1.0.3";
 
     static final String VERSION = "v0.10";
-    // static final String DEFAULT_BASE_URL =
-    //     "https://transfer.api.globusonline.org/" + VERSION;
     static final String DEFAULT_BASE_URL =
+        "https://transfer.api.globusonline.org/" + VERSION;
+    static final String DEFAULT_TEST_BASE_URL =
         "https://transfer.test.api.globusonline.org/" + VERSION;
 
     static final String FORMAT_JSON = "application/json";
@@ -91,11 +91,6 @@ public class BaseTransferAPIClient {
         this(username, format, null, null, baseUrl);
     }
 
-    public void setVerbose(boolean v)
-    {
-        this.verbose = v;
-    }
-
     /**
      * Create a client for the specified user.
      *
@@ -118,7 +113,8 @@ public class BaseTransferAPIClient {
      */
     public BaseTransferAPIClient(String username, String format,
                                  TrustManager[] trustManagers,
-                                 KeyManager[] keyManagers, String baseUrl) {
+                                 KeyManager[] keyManagers, String baseUrl)
+    {
         this.username = username;
         this.format = format;
         if (baseUrl == null) {
@@ -131,6 +127,16 @@ public class BaseTransferAPIClient {
         this.keyManagers = keyManagers;
 
         this.socketFactory = null;
+    }
+
+    public void setBaseUrl(String baseUrl)
+    {
+        this.baseUrl = baseUrl;
+    }
+
+    public void setVerbose(boolean v)
+    {
+        this.verbose = v;
     }
 
     public void setAuthenticator(Authenticator authenticator)

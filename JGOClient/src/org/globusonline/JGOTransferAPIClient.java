@@ -75,6 +75,11 @@ public class JGOTransferAPIClient extends BCTransferAPIClient
         }
     }
 
+    public Options getOptions()
+    {
+        return this.opts;
+    }
+
     /**
      * Create a client for the user.
      *

@@ -321,6 +321,43 @@ public class JGOTransfer
         }
     }
 
+    // this form is useful for using delegation based on the supplied
+    // credential; requires authToken to be set and valid
+    public void activateEndpoint(String logicalEPName, String credential) throws JGOTransferException
+    {
+        int i = 0;
+        if ((this.authToken == null) || (logicalEPName == null) || (credential == null))
+        {
+            throw new JGOTransferException("Invalid arguments specified (none can be null and authToken MUST be set)");
+        }
+        String[] args = new String[10];
+
+        args[i++] = "-authToken";
+        args[i++] = this.authToken;
+        args[i++] = "-cert";
+        args[i++] = credential;
+        args[i++] = "-ca";
+        args[i++] = this.caCertificate;
+        args[i++] = "-u";
+        args[i++] = this.goUsername;
+        args[i++] = "delegated-activate";
+        args[i++] = logicalEPName;
+
+        try
+        {
+            ActivationRequirementResult activation = (ActivationRequirementResult)JGOClient.execJGOCommand(args);
+            dprint("Activation complete: " + activation);
+        }
+        catch(Exception e)
+        {
+            if (this.verbose)
+            {
+                e.printStackTrace();
+            }
+            throw new JGOTransferException("Endpoint Activation failure: " + e.toString());
+        }
+    }
+
     // useful for Globus Connect activation
     public void activateEndpoint(String logicalEPName) throws JGOTransferException
     {

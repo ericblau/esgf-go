@@ -69,6 +69,7 @@ public class JGOClient
         if (opts.verbose) opts.print();
 
         JGOTransferAPIClient client = new JGOTransferAPIClient(opts);
+        client.setBaseUrl(opts.baseUrl);
         client.setVerbose(opts.verbose);
         HttpsURLConnection sConn = null;
         JSONArray results = null;
