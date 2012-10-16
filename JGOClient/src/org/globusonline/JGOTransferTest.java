@@ -37,7 +37,7 @@ public class JGOTransferTest
     private static String GO_ENDPOINT2_NAME = "testEp2";
     private static String GO_EP1_NAME       = "go#ep1";
 
-    private static String AUTHTOKEN         = "un=neillm78...ADD REAL TOKEN HERE";
+    private static String AUTHTOKEN         = "";
 
     public static void print(String msg)
     {
@@ -55,6 +55,7 @@ public class JGOTransferTest
             // setup transfer parameters here (optional)
             transfer.setVerbose(true);
             //transfer.setTmpFileDirectory("/home/neillm");
+            transfer.setBaseUrl("https://transfer.test.api.globusonline.org/v0.10");
 
             // initialize transfer (required)
             transfer.initialize();

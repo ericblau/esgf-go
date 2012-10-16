@@ -40,6 +40,7 @@ public class JGOTransfer
     protected String myproxyPassword = null;
     protected String caCertificate = null;
     protected String tmpFileDirectory = null;
+    protected String baseUrl = null;
 
     public JGOTransfer(String goUsername, String authToken, String caCertificate)
     {
@@ -100,6 +101,11 @@ public class JGOTransfer
     public void setTmpFileDirectory(String tmpFileDirectory)
     {
         this.tmpFileDirectory = tmpFileDirectory;
+    }
+
+    public void setBaseUrl(String baseUrl)
+    {
+        this.baseUrl = baseUrl;
     }
 
     public String getUserCertificateFile()
@@ -167,6 +173,7 @@ public class JGOTransfer
 
         int i = 0;
         int argCount = ((this.authToken == null) ? 10 : 8);
+        argCount += ((this.baseUrl == null) ? 0 : 2);
         String[] args = new String[argCount];
 
         if (this.authToken != null)
@@ -180,6 +187,11 @@ public class JGOTransfer
             args[i++] = this.certificate;
             args[i++] = "-key";
             args[i++] = this.key;
+        }
+        if (this.baseUrl != null)
+        {
+            args[i++] = "-base";
+            args[i++] = this.baseUrl;
         }
         args[i++] = "-ca";
         args[i++] = this.caCertificate;
@@ -226,6 +238,7 @@ public class JGOTransfer
     {
         int i = 0;
         int argCount = ((this.authToken == null) ? 16 : 14);
+        argCount += ((this.baseUrl == null) ? 0 : 2);
         String[] args = null;
 
         if (isGlobusConnect == true)
@@ -251,6 +264,11 @@ public class JGOTransfer
             args[i++] = this.certificate;
             args[i++] = "-key";
             args[i++] = this.key;
+        }
+        if (this.baseUrl != null)
+        {
+            args[i++] = "-base";
+            args[i++] = this.baseUrl;
         }
         args[i++] = "-u";
         args[i++] = this.goUsername;
@@ -285,6 +303,7 @@ public class JGOTransfer
     {
         int i = 0;
         int argCount = ((this.authToken == null) ? 10 : 8);
+        argCount += ((this.baseUrl == null) ? 0 : 2);
         String[] args = new String[argCount];
 
         args[i++] = "-ca";
@@ -300,6 +319,11 @@ public class JGOTransfer
             args[i++] = this.certificate;
             args[i++] = "-key";
             args[i++] = this.key;
+        }
+        if (this.baseUrl != null)
+        {
+            args[i++] = "-base";
+            args[i++] = this.baseUrl;
         }
         args[i++] = "-u";
         args[i++] = this.goUsername;
@@ -330,7 +354,8 @@ public class JGOTransfer
         {
             throw new JGOTransferException("Invalid arguments specified (none can be null and authToken MUST be set)");
         }
-        String[] args = new String[10];
+        int argCount = ((this.baseUrl == null) ? 10 : 12);
+        String[] args = new String[argCount];
 
         args[i++] = "-authToken";
         args[i++] = this.authToken;
@@ -338,6 +363,11 @@ public class JGOTransfer
         args[i++] = credential;
         args[i++] = "-ca";
         args[i++] = this.caCertificate;
+        if (this.baseUrl != null)
+        {
+            args[i++] = "-base";
+            args[i++] = this.baseUrl;
+        }
         args[i++] = "-u";
         args[i++] = this.goUsername;
         args[i++] = "delegated-activate";
@@ -370,6 +400,7 @@ public class JGOTransfer
         int i = 0;
         int argCount = (((myproxyUsername == null) && (myproxyPassword == null)) ? 10 : 14);
         argCount -= ((this.authToken == null) ? 0 : 2);
+        argCount += ((this.baseUrl == null) ? 0 : 2);
         String[] args = new String[argCount];
         if (this.authToken != null)
         {
@@ -382,6 +413,11 @@ public class JGOTransfer
             args[i++] = this.certificate;
             args[i++] = "-key";
             args[i++] = this.key;
+        }
+        if (this.baseUrl != null)
+        {
+            args[i++] = "-base";
+            args[i++] = this.baseUrl;
         }
         args[i++] = "-ca";
         args[i++] = this.caCertificate;
@@ -419,6 +455,7 @@ public class JGOTransfer
 
         int i = 0;
         int argCount = ((this.authToken == null) ? 10 : 8);
+        argCount += ((this.baseUrl == null) ? 0 : 2);
         String[] args = new String[argCount];
 
         args[i++] = "-ca";
@@ -434,6 +471,11 @@ public class JGOTransfer
             args[i++] = this.certificate;
             args[i++] = "-key";
             args[i++] = this.key;
+        }
+        if (this.baseUrl != null)
+        {
+            args[i++] = "-base";
+            args[i++] = this.baseUrl;
         }
         args[i++] = "-u";
         args[i++] = this.goUsername;
@@ -508,6 +550,7 @@ public class JGOTransfer
 
         int j = 0;
         int index = ((this.authToken == null) ? 9 : 7);
+        index += ((this.baseUrl == null) ? 0 : 2);
         int totalSlots = (index + (sourceFileList.size() * 2));
         String[] args = new String[totalSlots];
 
@@ -522,6 +565,11 @@ public class JGOTransfer
             args[j++] = this.certificate;
             args[j++] = "-key";
             args[j++] = this.key;
+        }
+        if (this.baseUrl != null)
+        {
+            args[j++] = "-base";
+            args[j++] = this.baseUrl;
         }
         args[j++] = "-ca";
         args[j++] = this.caCertificate;
