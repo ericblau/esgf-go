@@ -21,7 +21,7 @@ import java.util.Vector;
 public class JGOTransferTest
 {
     // TODO: Update these to make sense for your environment
-    private static String GO_USERNAME = "neillm";
+    private static String GO_USERNAME = "neillm78";
 
     private static String CERTIFICATE_FILE = "/tmp/x509up_u1000";
     private static String KEY_FILE = "/tmp/x509up_u1000";
@@ -35,9 +35,10 @@ public class JGOTransferTest
 
     private static String GO_ENDPOINT1_NAME = "testEP1";
     private static String GO_ENDPOINT2_NAME = "testEp2";
+    private static String GO_ENDPOINT3_NAME = "testEp3";
     private static String GO_EP1_NAME       = "go#ep1";
 
-    private static String AUTHTOKEN         = "";
+    private static String AUTHTOKEN         = "AUTH TOKEN HERE";
 
     public static void print(String msg)
     {
@@ -49,8 +50,11 @@ public class JGOTransferTest
         try
         {
             //JGOTransfer transfer = new JGOTransfer(GO_USERNAME, CERTIFICATE_FILE, KEY_FILE, CA_CERTIFICATE_FILE);
-            // JGOTransfer transfer = new JGOTransfer(GO_USERNAME, MYPROXY_SERVER, MYPROXY_USERNAME, MYPROXY_PASSWORD, CA_CERTIFICATE_FILE);
-            JGOTransfer transfer = new JGOTransfer(GO_USERNAME, AUTHTOKEN, CA_CERTIFICATE_FILE);
+
+            // NOTE: First get a credential, but then replace the object with a new one using the authToken
+            // A later test tries to use the credential
+            JGOTransfer transfer = new JGOTransfer(GO_USERNAME, MYPROXY_SERVER, MYPROXY_USERNAME, MYPROXY_PASSWORD, CA_CERTIFICATE_FILE);
+            //JGOTransfer transfer = new JGOTransfer(GO_USERNAME, AUTHTOKEN, CA_CERTIFICATE_FILE);
 
             // setup transfer parameters here (optional)
             transfer.setVerbose(true);
@@ -59,6 +63,9 @@ public class JGOTransferTest
 
             // initialize transfer (required)
             transfer.initialize();
+
+            // set authToken later to make sure the initialize method pulls down a credential
+            transfer.setAuthToken(AUTHTOKEN);
 
             print("Listing endpoints");
             Vector<EndpointInfo> endpoints = transfer.listEndpoints();
@@ -80,6 +87,12 @@ public class JGOTransferTest
 
             print("Attempting to activate " + GO_ENDPOINT1_NAME + " as " + MYPROXY_USERNAME);
             transfer.activateEndpoint(GO_ENDPOINT1_NAME, MYPROXY_USERNAME, MYPROXY_PASSWORD);
+
+            print("Adding endpoint " + GO_ENDPOINT3_NAME);
+            transfer.addEndpoint(GO_ENDPOINT3_NAME, GRIDFTP_SERVER, MYPROXY_SERVER, isGlobusConnectEP);
+
+            print("Attempting to activate via delegation " + GO_ENDPOINT3_NAME);
+            transfer.activateEndpoint(GO_ENDPOINT3_NAME, transfer.getUserCertificateFile());
 
             // build source file list
             Vector<String> fileList = new Vector<String>();

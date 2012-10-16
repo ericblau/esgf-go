@@ -93,6 +93,11 @@ public class JGOTransfer
         }
     }
 
+    public void setAuthToken(String authToken)
+    {
+        this.authToken = authToken;
+    }
+
     public void setVerbose(boolean verbose)
     {
         this.verbose = verbose;
