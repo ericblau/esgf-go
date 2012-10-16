@@ -130,6 +130,9 @@ public class JGOTransferTest
 
             print("Removing endpoint " + GO_ENDPOINT2_NAME);
             transfer.removeEndpoint(GO_ENDPOINT2_NAME);
+
+            print("Removing endpoint " + GO_ENDPOINT3_NAME);
+            transfer.removeEndpoint(GO_ENDPOINT3_NAME);
         }
         catch(Exception e)
         {
