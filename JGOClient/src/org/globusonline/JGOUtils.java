@@ -101,7 +101,7 @@ public class JGOUtils
             // sb.append(")/endpoint?limit=100");
 
             // v0.10
-            sb.append("/endpoint_list?limit=100");
+            sb.append("/endpoint_list?limit=1000");
         }
         else if (op.equals("endpoint-add"))
         {
