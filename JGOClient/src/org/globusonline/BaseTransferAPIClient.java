@@ -57,7 +57,7 @@ public class BaseTransferAPIClient {
     protected TrustManager[] trustManagers;
     protected SSLSocketFactory socketFactory;
 
-    static final String CLIENT_VERSION = "JGOClient/1.0.3";
+    static final String CLIENT_VERSION = "JGOClient/1.0.4";
 
     static final String VERSION = "v0.10";
     static final String DEFAULT_BASE_URL =

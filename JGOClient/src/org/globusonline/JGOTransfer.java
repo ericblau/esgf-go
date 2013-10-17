@@ -130,7 +130,9 @@ public class JGOTransfer
         dprint("Using MyProxy Server " + this.myproxyServer + " and port " + myproxyPort);
 
         MyProxy myproxy = new MyProxy(this.myproxyServer, myproxyPort);
-        GSSCredential credential = myproxy.get(this.myproxyUsername, this.myproxyPassword, (12 * 3600));
+        //GSSCredential credential = myproxy.get(this.myproxyUsername, this.myproxyPassword, (12 * 3600));
+	//Proxies seem to max out at 3 days, let's request that:
+        GSSCredential credential = myproxy.get(this.myproxyUsername, this.myproxyPassword, (72 * 3600));
         File f = null;
         if (this.tmpFileDirectory != null)
         {
