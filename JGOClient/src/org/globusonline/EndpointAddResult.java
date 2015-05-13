@@ -82,7 +82,11 @@ public class EndpointAddResult extends JGOResult
                 if (pieces.length > 1)
                 {
                     port = pieces[1];
+                    if (port.indexOf('/')>0) {
+                        port = port.substring(0, port.indexOf('/'));
+                    }
                 }
+
             }
 
             dataObj.put("DATA_TYPE", "server");
